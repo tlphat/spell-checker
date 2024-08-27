@@ -5,24 +5,33 @@
 #include <bitset>
 #include <array>
 #include <functional>
+#include <fstream>
 
 class BloomFilter {
 public:
     BloomFilter();
 
-    void add(const std::string& word);
-    bool exists(const std::string& word);
+    bool Exists(const std::string& word);
+
+    void LoadDictionary(std::ifstream& is);
+
+    void SaveBinary(std::ofstream& os);
+    void LoadBinary(std::ifstream& is);
 
 private:
-    static const size_t M = 4600000;
-    using BitArray = std::bitset<M>;
-    BitArray bit_array;
+    void Add(const std::string& word);
 
-    static const size_t K = 17;
-    static const std::array<unsigned int, K> knv_offsets;
-    static const std::array<unsigned int, K> knv_primes;
+    static const size_t kM = 4600000;
+    using BitArray = std::bitset<kM>;
+    BitArray bit_array_;
+
+    static const size_t kK = 17;
+    static const std::array<unsigned int, kK> kKnvOffsets;
+    static const std::array<unsigned int, kK> kKnvPrimes;
     using HashFunction = std::function<int(const std::string&)>;
-    std::array<HashFunction, K> hash_functions;
+    std::array<HashFunction, kK> hash_functions_;
+
+    static const int kVersion = 1;
 };
 
 #endif
