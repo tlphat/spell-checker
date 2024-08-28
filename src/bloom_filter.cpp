@@ -3,8 +3,11 @@
 
 #include <cstring>
 #include <algorithm>
-#include <iostream>
 #include <bit>
+
+const size_t BloomFilter::kK;
+const size_t BloomFilter::kM;
+const int BloomFilter::kVersion;
 
 const std::array<unsigned int, BloomFilter::kK> BloomFilter::kKnvOffsets = {
     2166136261, 
@@ -79,28 +82,31 @@ void BloomFilter::LoadDictionary(std::ifstream& is) {
 }
 
 void BloomFilter::SaveBinary(std::ofstream& os) {
-    char identifier[4];
-    std::memcpy(identifier, &"CCBF", sizeof(identifier));
-    os.write(identifier, sizeof(identifier));
-
-    char version[2];
-    std::memcpy(version, &kVersion, sizeof(version));
-    os.write(version, sizeof(version));
-
-    char k[2];
-    std::memcpy(k, &kK, sizeof(k));
-    os.write(k, sizeof(k));
-
-    char m[4];
-    std::memcpy(m, &kM, sizeof(m));
-    os.write(m, sizeof(m));
-
-    const int bit_array_size_in_bytes = (kM + 7) / 8;
-    char bit_array[bit_array_size_in_bytes];
-    std::memcpy(bit_array, &bit_array_, sizeof(bit_array));
-    os.write(bit_array, sizeof(bit_array));
+    WriteStrToBinFile(os, "CCBF", 4);
+    WriteIntToBinFile(os, kVersion, 2);
+    WriteIntToBinFile(os, kK, 2);
+    WriteIntToBinFile(os, kM, 4);
+    WriteBitArrToBinFile(os, bit_array_, (kM + 7) / 8);
 }
 
 void BloomFilter::LoadBinary(std::ifstream& is) {
 
+}
+
+void BloomFilter::WriteStrToBinFile(std::ofstream& os, const std::string& str, int size_in_bytes) {
+    char arr[size_in_bytes];
+    std::memcpy(arr, &str[0], size_in_bytes);
+    os.write(arr, size_in_bytes);
+}
+
+void BloomFilter::WriteIntToBinFile(std::ostream& os, int n, int size_in_bytes) {
+    char arr[size_in_bytes];
+    std::memcpy(arr, &n, size_in_bytes);
+    os.write(arr, size_in_bytes);
+}
+
+void BloomFilter::WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_array, int size_in_bytes) {
+    char arr[size_in_bytes];
+    std::memcpy(arr, &bit_array, size_in_bytes);
+    os.write(arr, size_in_bytes);
 }

@@ -32,6 +32,10 @@ private:
     std::array<HashFunction, kK> hash_functions_;
 
     static const int kVersion = 1;
+
+    static void WriteStrToBinFile(std::ofstream& os, const std::string& str, int size_in_bytes);
+    static void WriteIntToBinFile(std::ostream& os, int n, int size_in_bytes);
+    static void WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_array, int size_in_bytes);
 };
 
 #endif
