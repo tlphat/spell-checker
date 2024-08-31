@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
         BloomFilter bloom_filter;
 
         std::ifstream in(argv[2]);
-        bloom_filter.LoadDictionary(in);
+        bloom_filter.InitFromDictionary(in);
         in.close();
 
         std::ofstream os("words.bf", std::ios::binary);

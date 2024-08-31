@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <bit>
 
-#include <iostream>
-
 const size_t BloomFilter::kK;
 const size_t BloomFilter::kM;
 const int BloomFilter::kVersion;
@@ -76,7 +74,7 @@ bool BloomFilter::Exists(const std::string& word) {
     return true;
 }
 
-void BloomFilter::LoadDictionary(std::ifstream& is) {
+void BloomFilter::InitFromDictionary(std::ifstream& is) {
     std::string line;
     while (std::getline(is, line)) {
         Add(line);
@@ -88,7 +86,7 @@ void BloomFilter::SaveBinary(std::ofstream& os) {
     WriteIntToBinFile(os, kVersion, 2);
     WriteIntToBinFile(os, kK, 2);
     WriteIntToBinFile(os, kM, 4);
-    WriteBitArrToBinFile(os, bit_array_, (kM + 7) / 8);
+    WriteBitArrToBinFile(os);
 }
 
 int BloomFilter::LoadBinary(std::ifstream& is) {
@@ -102,10 +100,7 @@ int BloomFilter::LoadBinary(std::ifstream& is) {
         return 2;
     }
 
-    char buffer[(kM + 7) / 8];
-    is.read(buffer, sizeof(buffer));
-    std::memcpy(&bit_array_, buffer, sizeof(buffer));
-
+    LoadBitArrFromBinFile(is);
     return 0;
 }
 
@@ -121,10 +116,11 @@ void BloomFilter::WriteIntToBinFile(std::ostream& os, int n, int size_in_bytes) 
     os.write(buffer, size_in_bytes);
 }
 
-void BloomFilter::WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_array, int size_in_bytes) {
-    char buffer[size_in_bytes];
-    std::memcpy(buffer, &bit_array, size_in_bytes);
-    os.write(buffer, size_in_bytes);
+void BloomFilter::WriteBitArrToBinFile(std::ostream& os) {
+    int bit_array_size_in_bytes = (kM + 7) / 8;
+    char buffer[bit_array_size_in_bytes];
+    std::memcpy(buffer, &bit_array_, bit_array_size_in_bytes);
+    os.write(buffer, bit_array_size_in_bytes);
 }
 
 bool BloomFilter::AreNextNBytesFromFileMatchStr(std::istream& is, const std::string& str, int n) {
@@ -142,4 +138,11 @@ bool BloomFilter::AreNextNBytesFromFileMatchInt(std::istream& is, int dest, int 
     std::memcpy(&src, buffer, n);
 
     return src == dest;
+}
+
+void BloomFilter::LoadBitArrFromBinFile(std::istream& is) {
+    int bit_array_size_in_bytes = (kM + 7) / 8;
+    char buffer[bit_array_size_in_bytes];
+    is.read(buffer, sizeof(buffer));
+    std::memcpy(&bit_array_, buffer, sizeof(buffer));
 }

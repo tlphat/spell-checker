@@ -13,7 +13,7 @@ public:
 
     bool Exists(const std::string& word);
 
-    void LoadDictionary(std::ifstream& is);
+    void InitFromDictionary(std::ifstream& is);
 
     void SaveBinary(std::ofstream& os);
     int LoadBinary(std::ifstream& is);
@@ -35,10 +35,11 @@ private:
 
     static void WriteStrToBinFile(std::ofstream& os, const std::string& str, int size_in_bytes);
     static void WriteIntToBinFile(std::ostream& os, int n, int size_in_bytes);
-    static void WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_array, int size_in_bytes);
+    void WriteBitArrToBinFile(std::ostream& os);
 
     static bool AreNextNBytesFromFileMatchStr(std::istream& is, const std::string& str, int n);
     static bool AreNextNBytesFromFileMatchInt(std::istream& is, int target, int n);
+    void LoadBitArrFromBinFile(std::istream& is);
 };
 
 #endif
