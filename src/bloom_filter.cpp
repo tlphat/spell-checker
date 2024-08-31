@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <bit>
 
+#include <iostream>
+
 const size_t BloomFilter::kK;
 const size_t BloomFilter::kM;
 const int BloomFilter::kVersion;
@@ -90,8 +92,9 @@ void BloomFilter::SaveBinary(std::ofstream& os) {
 }
 
 int BloomFilter::LoadBinary(std::ifstream& is) {
-    char file_type[4];
-    is.read(file_type, sizeof(file_type));
+    if (!AreNextNBytesFromFileMatchStr(is, "CCBF", 4)) {
+        return 1;
+    }
     
     char version[2];
     is.read(version, sizeof(version));
@@ -125,4 +128,15 @@ void BloomFilter::WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_arr
     char arr[size_in_bytes];
     std::memcpy(arr, &bit_array, size_in_bytes);
     os.write(arr, size_in_bytes);
+}
+
+bool BloomFilter::AreNextNBytesFromFileMatchStr(std::istream& is, const std::string& str, int n) {
+    // Terminating null is required for string comparison
+    char arr[n + 1] = { '\0' };
+    is.read(arr, n);
+    return std::strcmp(arr, str.c_str()) == 0;
+}
+
+bool BloomFilter::AreNextNBytesFromFileMatchInt(std::istream& is, int target, int n) {
+    return true;
 }

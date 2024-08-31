@@ -36,6 +36,9 @@ private:
     static void WriteStrToBinFile(std::ofstream& os, const std::string& str, int size_in_bytes);
     static void WriteIntToBinFile(std::ostream& os, int n, int size_in_bytes);
     static void WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_array, int size_in_bytes);
+
+    static bool AreNextNBytesFromFileMatchStr(std::istream& is, const std::string& str, int n);
+    static bool AreNextNBytesFromFileMatchInt(std::istream& is, int target, int n);
 };
 
 #endif
