@@ -95,48 +95,51 @@ int BloomFilter::LoadBinary(std::ifstream& is) {
     if (!AreNextNBytesFromFileMatchStr(is, "CCBF", 4)) {
         return 1;
     }
-    
-    char version[2];
-    is.read(version, sizeof(version));
 
-    char k[2];
-    is.read(k, sizeof(k));
+    if (!AreNextNBytesFromFileMatchInt(is, kVersion, 2) || 
+        !AreNextNBytesFromFileMatchInt(is, kK, 2) || 
+        !AreNextNBytesFromFileMatchInt(is, kM, 4)) {
+        return 2;
+    }
 
-    char m[4];
-    is.read(m, sizeof(m));
-
-    char bit_arr[(kM + 7) / 8];
-    is.read(bit_arr, sizeof(bit_arr));
-    std::memcpy(&bit_array_, bit_arr, (kM + 7) / 8);
+    char buffer[(kM + 7) / 8];
+    is.read(buffer, sizeof(buffer));
+    std::memcpy(&bit_array_, buffer, sizeof(buffer));
 
     return 0;
 }
 
 void BloomFilter::WriteStrToBinFile(std::ofstream& os, const std::string& str, int size_in_bytes) {
-    char arr[size_in_bytes];
-    std::memcpy(arr, &str[0], size_in_bytes);
-    os.write(arr, size_in_bytes);
+    char buffer[size_in_bytes];
+    std::memcpy(buffer, &str[0], size_in_bytes);
+    os.write(buffer, size_in_bytes);
 }
 
 void BloomFilter::WriteIntToBinFile(std::ostream& os, int n, int size_in_bytes) {
-    char arr[size_in_bytes];
-    std::memcpy(arr, &n, size_in_bytes);
-    os.write(arr, size_in_bytes);
+    char buffer[size_in_bytes];
+    std::memcpy(buffer, &n, size_in_bytes);
+    os.write(buffer, size_in_bytes);
 }
 
 void BloomFilter::WriteBitArrToBinFile(std::ostream& os, const BitArray& bit_array, int size_in_bytes) {
-    char arr[size_in_bytes];
-    std::memcpy(arr, &bit_array, size_in_bytes);
-    os.write(arr, size_in_bytes);
+    char buffer[size_in_bytes];
+    std::memcpy(buffer, &bit_array, size_in_bytes);
+    os.write(buffer, size_in_bytes);
 }
 
 bool BloomFilter::AreNextNBytesFromFileMatchStr(std::istream& is, const std::string& str, int n) {
     // Terminating null is required for string comparison
-    char arr[n + 1] = { '\0' };
-    is.read(arr, n);
-    return std::strcmp(arr, str.c_str()) == 0;
+    char buffer[n + 1] = { '\0' };
+    is.read(buffer, n);
+    return std::strcmp(buffer, str.c_str()) == 0;
 }
 
-bool BloomFilter::AreNextNBytesFromFileMatchInt(std::istream& is, int target, int n) {
-    return true;
+bool BloomFilter::AreNextNBytesFromFileMatchInt(std::istream& is, int dest, int n) {
+    char buffer[n];
+    is.read(buffer, n);
+
+    int src = 0;
+    std::memcpy(&src, buffer, n);
+
+    return src == dest;
 }
