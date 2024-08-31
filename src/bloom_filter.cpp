@@ -89,8 +89,24 @@ void BloomFilter::SaveBinary(std::ofstream& os) {
     WriteBitArrToBinFile(os, bit_array_, (kM + 7) / 8);
 }
 
-void BloomFilter::LoadBinary(std::ifstream& is) {
+int BloomFilter::LoadBinary(std::ifstream& is) {
+    char file_type[4];
+    is.read(file_type, sizeof(file_type));
+    
+    char version[2];
+    is.read(version, sizeof(version));
 
+    char k[2];
+    is.read(k, sizeof(k));
+
+    char m[4];
+    is.read(m, sizeof(m));
+
+    char bit_arr[(kM + 7) / 8];
+    is.read(bit_arr, sizeof(bit_arr));
+    std::memcpy(&bit_array_, bit_arr, (kM + 7) / 8);
+
+    return 0;
 }
 
 void BloomFilter::WriteStrToBinFile(std::ofstream& os, const std::string& str, int size_in_bytes) {

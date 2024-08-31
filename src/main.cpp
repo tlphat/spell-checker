@@ -29,7 +29,22 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    std::cerr << "Unsupported operation." << std::endl;
+    BloomFilter bloom_filter;
 
-    return 1;
+    std::ifstream in("words.bf", std::ios::binary);
+    int load_status_code = bloom_filter.LoadBinary(in);
+    in.close();
+
+    if (load_status_code != 0) {
+        return 1;
+    }
+
+    std::cout << "These words are spelt wrong:" << std::endl;
+    for (int i = 1; i < argc; ++i) {
+        if (!bloom_filter.Exists(argv[i])) {
+            std::cout << " " << argv[i] << std::endl;
+        }
+    }
+
+    return 0;
 }

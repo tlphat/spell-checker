@@ -16,7 +16,7 @@ public:
     void LoadDictionary(std::ifstream& is);
 
     void SaveBinary(std::ofstream& os);
-    void LoadBinary(std::ifstream& is);
+    int LoadBinary(std::ifstream& is);
 
 private:
     void Add(const std::string& word);
