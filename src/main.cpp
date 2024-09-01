@@ -1,4 +1,5 @@
 #include "bloom_filter.h"
+#include "output.h"
 
 #include <iostream>
 #include <fstream>
@@ -6,13 +7,13 @@
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cerr << "Too few arguments." << std::endl;
+        output::Error("Too few arguments.");
         return 1;
     }
 
     if (std::strcmp("-build", argv[1]) == 0) {
         if (argc != 3) {
-            std::cerr << "Incorrect number of arguments, expecting 1 parameter for build file." << std::endl;
+            output::Error("Incorrect number of arguments, expecting 1 parameter for build file.");
             return 1;
         }
 
@@ -46,14 +47,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (spelt_wrong_words.empty()) {
-        std::cout << "All words are spelt correctly." << std::endl;
-        return 0;
-    }
-
-    std::cout << "These words are spelt wrong:" << std::endl;
-    for (char* word : spelt_wrong_words) {
-        std::cout << " " << word << std::endl;
-    }
+    output::WrongWordsDetected(spelt_wrong_words);
     return 0;
 }
