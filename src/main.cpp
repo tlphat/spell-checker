@@ -39,12 +39,21 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::cout << "These words are spelt wrong:" << std::endl;
+    std::vector<char*> spelt_wrong_words;
     for (int i = 1; i < argc; ++i) {
         if (!bloom_filter.Exists(argv[i])) {
-            std::cout << " " << argv[i] << std::endl;
+            spelt_wrong_words.push_back(argv[i]);
         }
     }
 
+    if (spelt_wrong_words.empty()) {
+        std::cout << "All words are spelt correctly." << std::endl;
+        return 0;
+    }
+
+    std::cout << "These words are spelt wrong:" << std::endl;
+    for (char* word : spelt_wrong_words) {
+        std::cout << " " << word << std::endl;
+    }
     return 0;
 }
